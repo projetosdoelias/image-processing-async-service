@@ -11,17 +11,18 @@ router.post("/upload", upload.single("image"), async (req, res) => {
   }
 
   try {
-    const key = await uploadToS3(req.file);
-    const messageId = await sendMessageToQueue(key);
+    const { key, url } = await uploadToS3(req.file);
+    //const messageId = await sendMessageToQueue(key);
 
     return res.status(202).json({
       message: "Upload received and queued for processing",
       fileKey: key,
-      messageId,
+      fileUrl: url,
+      //messageId,
     });
-  } catch (err) {
-    console.error("Upload error:", err);
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
